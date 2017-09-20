@@ -1,4 +1,7 @@
 # Heroes.ReplayParser
+
+Modified by Maxim Tiourin to have console application output specific JSON structure
+
 A C# library for parsing Heroes of the Storm replay files (.StormReplay), currently developed and used by HOTSLogs.com
 
 Explanation
