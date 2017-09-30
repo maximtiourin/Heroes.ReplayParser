@@ -12,25 +12,25 @@ using System.Text;
  */
 namespace ConsoleApplication1
 {
-    class HeroStats {
+    /*class HeroStats {
         public string Name;
-        public int Kills;
-        public int Deaths;
+        public float Kills;
+        public float Deaths;
 
         public HeroStats(string name) {
             Name = name;
-            Kills = 0;
-            Deaths = 0;
+            Kills = 0f;
+            Deaths = 0f;
         }
 
-        public void addKill() {
-            Kills++;
+        public void addKill(float val) {
+            Kills += val;
         }
 
-        public void addDeath() {
-            Deaths++;
+        public void addDeath(float val) {
+            Deaths += val;
         }
-    }
+    }*/
 
     class Program
     {
@@ -84,7 +84,10 @@ namespace ConsoleApplication1
                         int region = 1;
                         int winner = 0;
 
-                        Dictionary<string, HeroStats> herostats = new Dictionary<string, HeroStats>();
+                        //Init hero stats
+                        /*Dictionary<int, Dictionary<string, HeroStats>> herostats = new Dictionary<int, Dictionary<string, HeroStats>>();
+                        herostats[0] = new Dictionary<string, HeroStats>();
+                        herostats[1] = new Dictionary<string, HeroStats>();*/
 
                         //Begin JSON
                         s(startObj());
@@ -103,6 +106,66 @@ namespace ConsoleApplication1
 
                         //Version
                         s(keystr("version", getVersionFormat(replay.ReplayVersion, replay.ReplayBuild)));
+
+                        //Calculate HeroStats
+                        /*List<Unit> heroUnits = replay.Units.Where(unit => unit.Group == Unit.UnitGroup.Hero).ToList();
+
+                        foreach (var unit in heroUnits) {
+                            string heroname = unit.PlayerControlledBy.Character;
+
+                            if (!herostats[unit.PlayerControlledBy.Team].ContainsKey(heroname)) {
+                                herostats[unit.PlayerControlledBy.Team][heroname] = new HeroStats(heroname);
+                            }
+
+                            HeroStats stats = herostats[unit.PlayerControlledBy.Team][heroname];
+
+                            Point death = unit.PointDied;
+
+                            if (death != null) {
+                                Player killerplayer = unit.PlayerKilledBy;
+                                if (killerplayer != null) {
+                                    if (unit.PlayerControlledBy != killerplayer) {
+                                        stats.addDeath(getDeathValueForHero(heroname));
+
+                                        if (killerplayer.PlayerType == PlayerType.Human) {
+                                            string killerhero = killerplayer.Character;
+
+                                            if (!herostats[killerplayer.Team].ContainsKey(killerhero)) {
+                                                herostats[killerplayer.Team][killerhero] = new HeroStats(killerhero);
+                                            }
+
+                                            HeroStats killerStats = herostats[killerplayer.Team][killerhero];
+
+                                            killerStats.addKill(getDeathValueForHero(heroname));
+                                        }
+                                    }
+                                }
+                                else {
+                                    stats.addDeath(getDeathValueForHero(heroname));
+                                }
+                            }
+                        }
+
+                        //Herostats debug
+                        int heroCount = heroUnits.Count;
+                        int u = 0;
+                        s(startArr("herostats_debug"));
+                        foreach (var unit in heroUnits) {
+                            Player player = unit.PlayerControlledBy;
+                            Player killerplayer = unit.PlayerKilledBy;
+
+                            if (killerplayer != null) {
+                                s(str(unit.PlayerControlledBy.Character + " => " + unit.PlayerKilledBy.Character));
+                            }
+                            else {
+                                s(str(unit.PlayerControlledBy.Character + " => ?"));
+                            }
+
+                            s(seperate(u < heroCount - 1));
+
+                            u++;
+                        }
+                        s(endArr());*/
 
                         //Players
                         int playerCount = replay.Players.Length;
@@ -134,11 +197,16 @@ namespace ConsoleApplication1
                             s(keynum("team", player.Team));
 
                             //Hero
-                            herostats[player.Character] = new HeroStats(player.Character);
                             s(keystr("hero", player.Character));
 
                             //Hero Level
                             s(keynum("hero_level", player.CharacterLevel));
+
+                            //Kills
+                            //s(keynum("kills", herostats[player.Team][player.Character].Kills));
+
+                            //Deaths
+                            //s(keynum("deaths", herostats[player.Team][player.Character].Deaths));
 
                             //Talents
                             int talentCount = player.Talents.Length;
@@ -217,46 +285,6 @@ namespace ConsoleApplication1
 
                         s(endObj());
 
-                        //HeroStats
-                        List<Unit> heroUnits = replay.Units.Where(unit => unit.Group == Unit.UnitGroup.Hero).ToList();
-
-                        foreach (var unit in heroUnits) {
-                            string heroname = unit.PlayerControlledBy.Character;
-
-                            HeroStats stats = herostats[heroname];
-                            stats.addDeath();
-
-                            Player killerplayer = unit.PlayerKilledBy;
-                            if (killerplayer != null) {
-                                if (killerplayer.PlayerType == PlayerType.Human) {
-                                    string killerhero = unit.PlayerKilledBy.Character;
-                                    HeroStats killerStats = herostats[killerhero];
-                                    killerStats.addKill();
-                                }
-                            }
-                        }
-
-
-                        int heroesCount = herostats.Values.Count;
-                        int h = 0;
-                        s(startObj("hero_stats"));
-
-                        foreach (var hero in herostats.Values) {
-                            s(startObj(hero.Name));
-
-                            //Kills
-                            s(keynum("k", hero.Kills));
-
-                            //Deaths
-                            s(keynum("d", hero.Deaths, false));
-
-                            s(endObj(h < heroesCount - 1));
-                            
-                            h++;
-                        }
-
-                        s(endObj());
-
                         //Region
                         s(keynum("region", region));
 
@@ -266,10 +294,10 @@ namespace ConsoleApplication1
                         s(endObj(false));
 
                         //TODO DEBUG file output
-                        System.IO.File.WriteAllText(@"test/output.json", sb.ToString());
+                        //System.IO.File.WriteAllText(@"test/output.json", sb.ToString());
 
                         //Output JSON
-                        //Console.WriteLine(sb);
+                        Console.WriteLine(sb);
 
                         //Console.Read(); // TODO DEBUG just to halt closing of cmdline window, use only for testing
                     }
@@ -316,6 +344,10 @@ namespace ConsoleApplication1
             return str(key) + k + v + seperate(commaTerminate);
         }
 
+        private static string keynum(string key, float v, bool commaTerminate = true) {
+            return str(key) + k + v + seperate(commaTerminate);
+        }
+
         private static string startObj() {
             return _o + "";
         }
@@ -348,6 +380,15 @@ namespace ConsoleApplication1
                     return "Quick Match";
                 default:
                     return "Irrelevant Match Type";
+            }
+        }
+
+        private static float getDeathValueForHero(string hero) {
+            if (hero.Equals("Murky")) {
+                return .25f;
+            }
+            else {
+                return 1f;
             }
         }
 
