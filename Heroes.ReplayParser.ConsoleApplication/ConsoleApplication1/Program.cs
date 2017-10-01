@@ -12,26 +12,6 @@ using System.Text;
  */
 namespace ConsoleApplication1
 {
-    /*class HeroStats {
-        public string Name;
-        public float Kills;
-        public float Deaths;
-
-        public HeroStats(string name) {
-            Name = name;
-            Kills = 0f;
-            Deaths = 0f;
-        }
-
-        public void addKill(float val) {
-            Kills += val;
-        }
-
-        public void addDeath(float val) {
-            Deaths += val;
-        }
-    }*/
-
     class Program
     {
         private static StringBuilder sb = new StringBuilder();
@@ -84,11 +64,6 @@ namespace ConsoleApplication1
                         int region = 1;
                         int winner = 0;
 
-                        //Init hero stats
-                        /*Dictionary<int, Dictionary<string, HeroStats>> herostats = new Dictionary<int, Dictionary<string, HeroStats>>();
-                        herostats[0] = new Dictionary<string, HeroStats>();
-                        herostats[1] = new Dictionary<string, HeroStats>();*/
-
                         //Begin JSON
                         s(startObj());
 
@@ -107,71 +82,13 @@ namespace ConsoleApplication1
                         //Version
                         s(keystr("version", getVersionFormat(replay.ReplayVersion, replay.ReplayBuild)));
 
-                        //Calculate HeroStats
-                        /*List<Unit> heroUnits = replay.Units.Where(unit => unit.Group == Unit.UnitGroup.Hero).ToList();
-
-                        foreach (var unit in heroUnits) {
-                            string heroname = unit.PlayerControlledBy.Character;
-
-                            if (!herostats[unit.PlayerControlledBy.Team].ContainsKey(heroname)) {
-                                herostats[unit.PlayerControlledBy.Team][heroname] = new HeroStats(heroname);
-                            }
-
-                            HeroStats stats = herostats[unit.PlayerControlledBy.Team][heroname];
-
-                            Point death = unit.PointDied;
-
-                            if (death != null) {
-                                Player killerplayer = unit.PlayerKilledBy;
-                                if (killerplayer != null) {
-                                    if (unit.PlayerControlledBy != killerplayer) {
-                                        stats.addDeath(getDeathValueForHero(heroname));
-
-                                        if (killerplayer.PlayerType == PlayerType.Human) {
-                                            string killerhero = killerplayer.Character;
-
-                                            if (!herostats[killerplayer.Team].ContainsKey(killerhero)) {
-                                                herostats[killerplayer.Team][killerhero] = new HeroStats(killerhero);
-                                            }
-
-                                            HeroStats killerStats = herostats[killerplayer.Team][killerhero];
-
-                                            killerStats.addKill(getDeathValueForHero(heroname));
-                                        }
-                                    }
-                                }
-                                else {
-                                    stats.addDeath(getDeathValueForHero(heroname));
-                                }
-                            }
-                        }
-
-                        //Herostats debug
-                        int heroCount = heroUnits.Count;
-                        int u = 0;
-                        s(startArr("herostats_debug"));
-                        foreach (var unit in heroUnits) {
-                            Player player = unit.PlayerControlledBy;
-                            Player killerplayer = unit.PlayerKilledBy;
-
-                            if (killerplayer != null) {
-                                s(str(unit.PlayerControlledBy.Character + " => " + unit.PlayerKilledBy.Character));
-                            }
-                            else {
-                                s(str(unit.PlayerControlledBy.Character + " => ?"));
-                            }
-
-                            s(seperate(u < heroCount - 1));
-
-                            u++;
-                        }
-                        s(endArr());*/
-
                         //Players
                         int playerCount = replay.Players.Length;
                         int p = 0;
                         s(startArr("players"));
                         foreach (var player in replay.Players.OrderByDescending(i => i.IsWinner)) {
+                            ScoreResult stats = player.ScoreResult;
+
                             //Start Player
                             s(startObj());
 
@@ -202,11 +119,91 @@ namespace ConsoleApplication1
                             //Hero Level
                             s(keynum("hero_level", player.CharacterLevel));
 
+                            //Stats object
+                            s(startObj("stats"));
+
+                            //In-game level
+                            //s(keynum("level", stats.Level));
+
                             //Kills
-                            //s(keynum("kills", herostats[player.Team][player.Character].Kills));
+                            s(keynum("kills", stats.SoloKills));
+
+                            //Assists
+                            s(keynum("assists", stats.Assists));
 
                             //Deaths
-                            //s(keynum("deaths", herostats[player.Team][player.Character].Deaths));
+                            s(keynum("deaths", stats.Deaths));
+
+                            //Siege Damage
+                            s(keynum("siege_damage", stats.SiegeDamage));
+
+                            //Hero Damage
+                            s(keynum("hero_damage", stats.HeroDamage));
+
+                            //Creep Damage
+                            //s(keynum("creep_damage", stats.CreepDamage));
+
+                            //Structure Damage
+                            s(keynum("structure_damage", stats.StructureDamage));
+
+                            //Summon Damage
+                            //s(keynum("summon_damage", stats.SummonDamage));
+
+                            //Minion Damage
+                            //s(keynum("minion_damage", stats.MinionDamage));
+
+                            //Healing
+                            s(keynum("healing", (stats.Healing.HasValue) ? (stats.Healing.Value) : (0)));
+
+                            //Self Healing
+                            //s(keynum("self_healing", stats.SelfHealing));
+
+                            //Damage Taken
+                            s(keynum("damage_taken", (stats.DamageTaken.HasValue) ? (stats.DamageTaken.Value) : (0)));
+
+                            //Merc Camps
+                            s(keynum("merc_camps", stats.MercCampCaptures));
+
+                            //Experience Contribution
+                            s(keynum("exp_contrib", stats.ExperienceContribution));
+
+                            //Meta Experience
+                            //s(keynum("exp_meta", stats.MetaExperience));
+
+                            //Best Killstreak
+                            s(keynum("best_killstreak", stats.HighestKillStreak));
+
+                            //Timed CCd enemies
+                            /*s(keynum("time_ccd_enemies", 
+                                (stats.TimeCCdEnemyHeroes.HasValue) 
+                                ? ((int) Math.Ceiling(stats.TimeCCdEnemyHeroes.Value.TotalSeconds)) 
+                                : (0)));*/
+
+                            //Time Spent Dead
+                            s(keynum("time_spent_dead", (int) Math.Ceiling(stats.TimeSpentDead.TotalSeconds)));
+
+                            //Town Kills
+                            //s(keynum("town_kills", stats.TownKills));
+
+                            //Watchtowers Captured
+                            //s(keynum("watchtowers_captured", stats.WatchTowerCaptures));
+
+                            //Accolades
+                            s(startArr("medals"));
+
+                            int macount = stats.MatchAwards.Count;
+                            int ma = 0;
+                            foreach (var medal in stats.MatchAwards) {
+                                s(str(medal + ""));
+
+                                s(seperate(ma < macount - 1));
+
+                                ma++;
+                            }
+
+                            s(endArr(false));
+
+                            s(endObj());
 
                             //Talents
                             int talentCount = player.Talents.Length;
@@ -258,6 +255,8 @@ namespace ConsoleApplication1
                         //Team Xp sample points
                         s(startObj("exp_samples"));
 
+                        int[] team_level = new int[2];
+
                         for (int team = 0; team < TEAMS; team++) {
                             s(startArr(team + ""));
 
@@ -272,8 +271,22 @@ namespace ConsoleApplication1
                                 //Team Level
                                 s(keynum("level", exp.TeamLevel));
 
-                                //Team Exp
-                                s(keynum("exp", exp.TotalXP, false));
+                                //Hero Exp
+                                s(keynum("hero_exp", exp.HeroXP));
+
+                                //Soak Exp (Camps, minions, trickling)
+                                s(keynum("soak_exp", exp.CreepXP + exp.MinionXP + exp.TrickleXP));
+
+                                //Structure Exp
+                                s(keynum("structure_exp", exp.StructureXP));
+
+                                //Total Exp
+                                s(keynum("total_exp", exp.TotalXP, false));
+
+                                //Set team level
+                                if (x == xpCount - 1) {
+                                    team_level[team] = exp.TeamLevel;
+                                }
 
                                 s(endObj(x < xpCount - 1));
 
@@ -287,6 +300,15 @@ namespace ConsoleApplication1
 
                         //Region
                         s(keynum("region", region));
+
+                        //Team level
+                        s(startObj("team_level"));
+
+                        s(keynum("0", team_level[0]));
+
+                        s(keynum("1", team_level[1], false));
+
+                        s(endObj());
 
                         //Winner
                         s(keynum("winner", winner, false));
