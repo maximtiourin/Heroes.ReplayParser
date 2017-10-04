@@ -253,50 +253,50 @@ namespace ConsoleApplication1
                         s(endObj());
 
                         //Team Xp sample points
-                        s(startObj("exp_samples"));
+                        //s(startObj("exp_samples"));
 
                         int[] team_level = new int[2];
 
                         for (int team = 0; team < TEAMS; team++) {
-                            s(startArr(team + ""));
+                            //s(startArr(team + ""));
 
                             int xpCount = replay.TeamPeriodicXPBreakdown[team].Count;
                             int x = 0;
                             foreach (var exp in replay.TeamPeriodicXPBreakdown[team]) {
-                                s(startObj());
+                                //s(startObj());
 
                                 //Time
-                                s(keynum("time", (int) Math.Ceiling(exp.TimeSpan.TotalSeconds)));
+                                //s(keynum("time", (int) Math.Ceiling(exp.TimeSpan.TotalSeconds)));
 
                                 //Team Level
-                                s(keynum("level", exp.TeamLevel));
+                                //s(keynum("level", exp.TeamLevel));
 
                                 //Hero Exp
-                                s(keynum("hero_exp", exp.HeroXP));
+                                //s(keynum("hero_exp", exp.HeroXP));
 
                                 //Soak Exp (Camps, minions, trickling)
-                                s(keynum("soak_exp", exp.CreepXP + exp.MinionXP + exp.TrickleXP));
+                                //s(keynum("soak_exp", exp.CreepXP + exp.MinionXP + exp.TrickleXP));
 
                                 //Structure Exp
-                                s(keynum("structure_exp", exp.StructureXP));
+                                //s(keynum("structure_exp", exp.StructureXP, false));
 
                                 //Total Exp
-                                s(keynum("total_exp", exp.TotalXP, false));
+                                //s(keynum("total_exp", exp.TotalXP, false));
 
                                 //Set team level
                                 if (x == xpCount - 1) {
                                     team_level[team] = exp.TeamLevel;
                                 }
 
-                                s(endObj(x < xpCount - 1));
+                                //s(endObj(x < xpCount - 1));
 
                                 x++;
                             }
 
-                            s(endArr(team < TEAMS - 1));
+                            //s(endArr(team < TEAMS - 1));
                         }
 
-                        s(endObj());
+                        //s(endObj());
 
                         //Region
                         s(keynum("region", region));
