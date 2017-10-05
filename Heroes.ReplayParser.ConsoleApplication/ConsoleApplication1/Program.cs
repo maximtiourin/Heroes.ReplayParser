@@ -83,6 +83,22 @@ namespace ConsoleApplication1
                         s(keystr("version", getVersionFormat(replay.ReplayVersion, replay.ReplayBuild)));
 
                         //Players
+                        //Players party determination
+                        Dictionary<long, Tuple<int, List<Player>>> party = new Dictionary<long, Tuple<int, List<Player>>>();
+                        int partyIndex = 1;
+                        foreach (var player in replay.Players.OrderByDescending(i => i.IsWinner)) {
+                            long partyval = player.PartyValue;
+
+                            if (partyval != 0) {
+                                if (!party.ContainsKey(partyval)) {
+                                    party[partyval] = new Tuple<int, List<Player>>(partyIndex++, new List<Player>());
+                                }
+
+                                party[partyval].Item2.Add(player);
+                            }
+                        }
+
+                        //Actual players object construction
                         int playerCount = replay.Players.Length;
                         int p = 0;
                         s(startArr("players"));
@@ -118,6 +134,38 @@ namespace ConsoleApplication1
 
                             //Hero Level
                             s(keynum("hero_level", player.CharacterLevel));
+
+                            //Account level
+                            s(keynum("account_level", player.AccountLevel));
+
+                            //Silenced status
+                            s(keynum("silenced", (player.IsSilenced) ? (1) : (0)));
+
+                            //Party array
+                            s(startArr("party"));
+
+                            if (player.PartyValue != 0) {
+                                List<Player> partyplayers = party[player.PartyValue].Item2;
+                                int currPartyIndex = party[player.PartyValue].Item1;
+                                if (partyplayers != null) {
+                                    List<Player> otherpartyplayers = partyplayers.Where(i => i.BattleNetId != player.BattleNetId).ToList();
+                                    int othercount = otherpartyplayers.Count;
+                                    int oc = 0;
+                                    foreach (var partyplayer in otherpartyplayers) {
+                                        s(startObj());
+
+                                        s(keynum("party_id", currPartyIndex));
+
+                                        s(keystr("name", partyplayer.Name, false));
+
+                                        s(endObj(oc < othercount - 1));
+
+                                        oc++;
+                                    }
+                                }
+                            }
+
+                            s(endArr());
 
                             //Stats object
                             s(startObj("stats"));
