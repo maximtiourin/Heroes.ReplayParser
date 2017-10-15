@@ -260,7 +260,8 @@ namespace ConsoleApplication1
                             foreach (var talent in player.Talents.OrderBy(j => j.TalentID)) {
                                 //Id : Indexing for a hero starts at 0, and then increments top down, 
                                 //     left right, as moving through talents
-                                s(talent.TalentID + "");
+                                //s(talent.TalentID + "");
+                                s(str(talent.TalentName));
 
                                 s(seperate(t < talentCount - 1));
 
