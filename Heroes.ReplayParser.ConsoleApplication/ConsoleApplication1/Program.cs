@@ -257,7 +257,7 @@ namespace ConsoleApplication1
                             int talentCount = player.Talents.Length;
                             int t = 0;
                             s(startArr("talents"));
-                            foreach (var talent in player.Talents.OrderBy(j => j.TalentID)) {
+                            foreach (var talent in player.Talents.OrderBy(j => j.TalentID).Where(n => n.TalentName != null && n.TalentName.Length > 0)) {
                                 //Id : Indexing for a hero starts at 0, and then increments top down, 
                                 //     left right, as moving through talents
                                 //s(talent.TalentID + "");
@@ -368,6 +368,7 @@ namespace ConsoleApplication1
                         //System.IO.File.WriteAllText(@"test/output.json", sb.ToString());
 
                         //Output JSON
+                        Console.OutputEncoding = Encoding.UTF8;
                         Console.WriteLine(sb);
 
                         //Console.Read(); // TODO DEBUG just to halt closing of cmdline window, use only for testing
