@@ -31,7 +31,8 @@ namespace ConsoleApplication1
         static void Main(string[] args)
         {
             int argc = args.Length;
-            int argexpect = (isWindowsOS()) ? (1) : (2);
+            //int argexpect = (isWindowsOS()) ? (1) : (2);
+            int argexpect = 1;
 
             if (argc != argexpect) {
                 Console.WriteLine("{\"error\": \"incorrect amount of arguments expect " + argexpect + "\"}");
@@ -68,7 +69,9 @@ namespace ConsoleApplication1
                         s(startObj());
 
                         //Game Mode
-                        s(keystr("type", getGameMode(replay.GameMode)));
+                        string mode = getGameMode(replay.GameMode);
+                        if (!ensureValidGameMode(mode, replay.GameMode)) return;
+                        s(keystr("type", mode));
 
                         //Date "2017-08-27 13:43:09" "yyyy-mm-dd hh:mm:ss"
                         s(keystr("date", getDateFormat(replay.Timestamp)));
@@ -110,6 +113,7 @@ namespace ConsoleApplication1
 
                             if (!isRegionSet) {
                                 region = player.BattleNetRegionId;
+                                if (!ensureValidRegion(region)) return;
                             }
                             if (!isWinnerSet) {
                                 if (player.IsWinner) {
@@ -387,6 +391,31 @@ namespace ConsoleApplication1
             }
         }
 
+        /*
+         * If the supplied region is not valid, signals to halt execution and writes a json structure with an error field
+         */
+        private static bool ensureValidRegion(int region) {
+            int[] validRegions = new int[] { 1, 2 };
+            if (!validRegions.Contains(region)) {
+                Console.WriteLine("{\"error\": \"Invalid region: " + region + "\"}");
+                return false;
+            }
+
+            return true;
+        }
+
+        /*
+         * If the supplied game mode is not valid, signals to halt execution and writes a json structure with an error field
+         */
+        private static bool ensureValidGameMode(string mode, GameMode type) {
+            if (mode.Equals("Irrelevant")) {
+                Console.WriteLine("{\"error\": \"Invalid game mode: " + type.ToString() + "\"}");
+                return false;
+            }
+
+            return true;
+        }
+
         private static void s(char v) {
             sb.Append(v);
         }
@@ -451,7 +480,7 @@ namespace ConsoleApplication1
                 case GameMode.QuickMatch:
                     return "Quick Match";
                 default:
-                    return "Irrelevant Match Type";
+                    return "Irrelevant";
             }
         }
 
