@@ -393,9 +393,10 @@ namespace ConsoleApplication1
 
         /*
          * If the supplied region is not valid, signals to halt execution and writes a json structure with an error field
+         * 1=US, 2=EU, 3=KR, 5=CN
          */
         private static bool ensureValidRegion(int region) {
-            int[] validRegions = new int[] { 1, 2 };
+            int[] validRegions = new int[] { 1, 2, 3, 5 };
             if (!validRegions.Contains(region)) {
                 Console.WriteLine("{\"error\": \"Invalid region: " + region + "\"}");
                 return false;
