@@ -42,9 +42,14 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>libs\ICSharpCode.SharpZipLib.dll</HintPath>
+=======
+    <Reference Include="DotNetZip, Version=1.10.1.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetZip.1.10.1\lib\net20\DotNetZip.dll</HintPath>
+>>>>>>> hotslogs/master
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -68,6 +73,9 @@
     <Content Include="libs\ICSharpCode.SharpZipLib.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <DefineConstants Condition=" '$(TargetFrameworkVersion)' == 'v4.5' ">NET_FRAMEWORK</DefineConstants>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

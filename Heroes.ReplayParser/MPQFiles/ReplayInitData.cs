@@ -136,7 +136,12 @@
                 reader.Read(4); // + 1 = Max Teams
                 reader.Read(6); // Max Colors
                 reader.Read(8); // + 1 = Max Races
-                reader.Read(8); // Max Controls
+
+				// Max Controls
+				if(replay.ReplayBuild < 59279)
+					reader.Read(8);
+				else
+					reader.Read(4);
 
                 replay.MapSize = new Point { X = (int)reader.Read(8), Y = (int)reader.Read(8) };
                 if (replay.MapSize.Y == 1)
@@ -160,8 +165,14 @@
                     reader.ReadBitArray(reader.Read(6)); // m_allowedColors
                     reader.ReadBitArray(reader.Read(8)); // m_allowedRaces
                     reader.ReadBitArray(reader.Read(6)); // m_allowedDifficulty
-                    reader.ReadBitArray(reader.Read(8)); // m_allowedControls
-                    reader.ReadBitArray(reader.Read(2)); // m_allowedObserveTypes
+
+					// m_allowedControls
+					if(replay.ReplayBuild < 59279)
+						reader.ReadBitArray(reader.Read(8));
+					else
+						reader.ReadBitArray(reader.Read(4));
+
+					reader.ReadBitArray(reader.Read(2)); // m_allowedObserveTypes
                     reader.ReadBitArray(reader.Read(7)); // m_allowedAIBuilds
                 }
 
